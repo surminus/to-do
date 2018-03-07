@@ -83,12 +83,16 @@ function _archive {
       echo "Do you still wish to archive?"
       echo "(y)es/(n)o"
 
-      read answer
-      case $answer in
-        y|yes) ;;
-        n|no) echo "Quitting" && exit 0 ;;
-        *) echo "Invalid option" && exit 1 ;;
-      esac
+      N=0
+      while [ $N -eq 0 ]; do
+        N=1
+        read answer
+        case $answer in
+          y|yes) ;;
+          n|no) exit 0 ;;
+          *) echo "(y)es/(n)o"; N=0;;
+        esac
+      done
     fi
 
     echo "Archiving current list"
@@ -97,26 +101,29 @@ function _archive {
       echo "List already exists with that date in archive. Do you wish to"
       echo "replace, combine or quit?"
       echo "(r)eplace/(c)ombine/(q)uit"
-      read replace
+      N=0
+      while [ $N -eq 0 ]; do
+        N=1
+        read replace
 
-      case $replace in
-        r|replace)
-          rm -f "${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md" && \
-          mv "${CURRENT_LIST}" "${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md" && \
-          echo "Archived as ${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md"
-          ;;
-        c|combine)
-          grep -v "${CURRENT_LIST_DATE}" "${CURRENT_LIST}" >> "${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md" && \
-          rm -f "${CURRENT_LIST}" && \
-          echo "Combined current list into ${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md"
-          ;;
-        q|quit)
-          echo "Quitting" && exit 0
-          ;;
-        *)
-          echo "Invalid option, quitting" && exit 1
-          ;;
-      esac
+        case $replace in
+          r|replace)
+            rm -f "${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md" && \
+            mv "${CURRENT_LIST}" "${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md" && \
+            echo "Archived as ${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md"
+            ;;
+          c|combine)
+            grep -v "${CURRENT_LIST_DATE}" "${CURRENT_LIST}" >> "${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md" && \
+            rm -f "${CURRENT_LIST}" && \
+            echo "Combined current list into ${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md"
+            ;;
+          q|quit)
+            echo "Quitting" && exit 0
+            ;;
+          *)
+            echo "(r)eplace/(c)ombine/(q)uit"; N=0 ;;
+        esac
+      done
     else
       mv "${CURRENT_LIST}" "${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md" && \
       echo "Archived as ${ARCHIVE_DIR}/${CURRENT_LIST_DATE}.md"
@@ -154,12 +161,15 @@ function _edit {
   else
     echo "No current list. Shall I create one?"
     echo "(y)es/(n)o"
-    read answer
-    case $answer in
-      y|yes) _new ;;
-      n|no) echo "Quitting" && exit 0 ;;
-      *) echo "Invalid command" && exit 1 ;;
-    esac
+    N=0
+    while [ $N -eq 0 ]; do
+      read answer
+      case $answer in
+        y|yes) _new ;;
+        n|no) exit 0 ;;
+        *) echo "(y)es/(n)o"; N=1 ;;
+      esac
+    done
   fi
 }
 
@@ -169,13 +179,18 @@ function _new_check {
       echo "Current list is only $(_current_list_age) days old!"
       echo "Do you want to edit instead, or archive and create new?"
       echo "(e)dit/(a)rchive/(q)uit"
-      read answer
-      case $answer in
-        e|edit) _edit ;;
-        n|new) _new ;;
-        q|quit) exit 0 ;;
-        *) exit 1 ;;
-      esac
+
+      N=0
+      while [ $N -eq 0 ]; do
+        N=1
+        read answer
+        case $answer in
+          e|edit) _edit ;;
+          n|new) _new ;;
+          q|quit) exit 0 ;;
+          *) echo "(e)dit/(a)rchive/(q)uit"; N=0 ;;
+        esac
+      done
     fi
   fi
 }
@@ -187,14 +202,18 @@ function _edit_check {
       echo "this list or create a new one?"
       echo "(n)ew/(e)dit/(q)uit"
 
-      read answer
+      N=0
+      while [ $N -eq 0 ]; do
+        N=1
+        read answer
 
-      case $answer in
-        n|new) _new ;;
-        e|edit) _edit ;;
-        q|quit) echo "Quitting" && exit 0 ;;
-        *) exit 1 ;;
-      esac
+        case $answer in
+          n|new) new ;;
+          e|edit) edit ;;
+          q|quit) exit 0 ;;
+          *) echo "(n)ew/(e)dit/(q)uit"; N=0;;
+        esac
+      done
     fi
   fi
 }
