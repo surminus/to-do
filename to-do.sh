@@ -5,7 +5,7 @@
 ### Set variables
 
 # Set current to-do list
-REPO_DIR="${HOME}/surminus/to-do/"
+REPO_DIR="${HOME}/surminus/to-do"
 
 ###
 if [[ $EDITOR == "" ]]; then
@@ -14,7 +14,6 @@ fi
 
 ### Global variable
 CURRENT_LIST="$REPO_DIR/to-do.md"
-CURRENT_LIST_DATE=$(head -n1 $CURRENT_LIST |awk '{print $2}')
 GIT_REPO="surminus/to-do"
 
 ### Functions
@@ -25,7 +24,7 @@ function _help {
       to-do
   #############
 
-  Usage: to-do <command>
+  Usage: to-do <command> [options]
 
   Commands:
 
@@ -36,9 +35,33 @@ function _help {
   browse     Opens up a web browser for the Github repository.
   show       Displays the contents of the current list to STDOUT.
 
+EOF
+}
+
+function _git_help {
+  cat << EOF
+  #############
+      to-do
+  #############
+
+  Usage: to-do git [option]
+
+  Commands:
+
+  update      Add latest changes and commit the result.
+  fetch       Pull the latest list.
+  push        Push the latest changes to the current branch.
 
 EOF
 }
+
+if [[ -f $CURRENT_LIST ]]; then
+  CURRENT_LIST_DATE=$(head -n1 $CURRENT_LIST |awk '{print $2}')
+  if [[ ! $CURRENT_LIST_DATE =~ ^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$ ]]; then
+    echo "Error! Does ${CURRENT_LIST} have incorrect date heading?"
+    exit 1
+  fi
+fi
 
 # Age of current list in days, based upon the header
 function _current_list_age {
@@ -56,7 +79,7 @@ function _archive {
 
   if [[ -f $CURRENT_LIST ]]; then
     if [[ "$(_current_list_age)" -lt 7 ]]; then
-      echo "Current list only $(_current_list_age) days old."
+      echo "Current list only $(_current_list_age) days old!"
       echo "Do you still wish to archive?"
       echo "(y)es/(n)o"
 
@@ -141,43 +164,66 @@ function _edit {
 }
 
 function _new_check {
-  if [[ "$(_current_list_older_than)" -lt 7  ]]; then
-    echo "Current list is only $(_current_list_older_than) days old,"
-    echo "do you want to edit instead, or archive and create new?"
-    echo "(e)dit/(a)rchive/(q)uit"
-    read answer
-    case $answer in
-      e|edit) _edit ;;
-      n|new) _new ;;
-      q|quit) exit 0 ;;
-      *) exit 1 ;;
-    esac
+  if [[ -f $CURRENT_LIST ]]; then
+    if [[ "$(_current_list_age)" -lt 7  ]]; then
+      echo "Current list is only $(_current_list_age) days old!"
+      echo "Do you want to edit instead, or archive and create new?"
+      echo "(e)dit/(a)rchive/(q)uit"
+      read answer
+      case $answer in
+        e|edit) _edit ;;
+        n|new) _new ;;
+        q|quit) exit 0 ;;
+        *) exit 1 ;;
+      esac
+    fi
   fi
 }
 
 function _edit_check {
-  if [[ $(_current_list_older_than) -ge 7 ]]; then
-    echo "Current list is older than one week. Do you wish to edit"
-    echo "this list or create a new one?"
-    echo "(n)ew/(e)dit/(q)uit"
+  if [[ -f $CURRENT_LIST ]]; then
+    if [[ $(_current_list_age) -ge 7 ]]; then
+      echo "Current list is older than one week. Do you wish to edit"
+      echo "this list or create a new one?"
+      echo "(n)ew/(e)dit/(q)uit"
 
-    read answer
+      read answer
 
-    case $answer in
-      n|new) _new ;;
-      e|edit) _edit ;;
-      q|quit) echo "Quitting" && exit 0 ;;
-      *) exit 1 ;;
-    esac
+      case $answer in
+        n|new) _new ;;
+        e|edit) _edit ;;
+        q|quit) echo "Quitting" && exit 0 ;;
+        *) exit 1 ;;
+      esac
+    fi
   fi
+}
+
+function _git {
+  COMMAND=$1
+
+  if [[ ! $COMMAND ]]; then
+    _git_help
+    exit 1
+  fi
+
+  cd $REPO_DIR
+
+  case $COMMAND in
+    update) git add -p && git commit -m "Updated on $(date %+F %H:%M:%S)" ;;
+    push) git push origin HEAD ;;
+    fetch) git pull ;;
+    *) _git_help ;;
+  esac
 }
 
 case $1 in
   archive) _archive ;;
   browse) _browse ;;
-  edit) _edit ;;
-  new) _new ;;
+  edit) _edit_check && _edit ;;
+  new) _new_check && _new ;;
   view) _view ;;
   show) _show ;;
+  git) _git $2 ;;
   *) _help ;;
 esac
