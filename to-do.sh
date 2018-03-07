@@ -225,5 +225,6 @@ case $1 in
   view) _view ;;
   show) _show ;;
   git) _git $2 ;;
-  *) _help ;;
+  help) _help ;;
+  *) _edit_check && _edit ;;
 esac
