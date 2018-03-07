@@ -2,8 +2,8 @@
 
 My to-do list.
 
-### Workflow
+### Install
 
- - current week goes into `to-do.md`
- - ensure a heading exists of the week commencing date
- - previous lists go into `archive/` directory, retitled with the w/c date
+ln -s to-do.sh /usr/local/bin/to-do
+
+Use `to-do help` for options.
