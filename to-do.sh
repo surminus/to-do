@@ -210,7 +210,7 @@ function _git {
   cd $REPO_DIR
 
   case $COMMAND in
-    update) git add -p && git commit -m "Updated on $(date %+F %H:%M:%S)" ;;
+    update) git add -p && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
     push) git push origin HEAD ;;
     fetch) git pull ;;
     *) _git_help ;;
