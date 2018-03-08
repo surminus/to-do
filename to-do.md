@@ -9,3 +9,7 @@ Last week at GDS!
  - [x] Add notes about licensing: spoke to Tim and Issy
  - [x] Confirm people team will change information in SOP about line management
  - [x] Check for ScaleSummit ticket in work account
+
+### Flats
+
+ - [] Ring back person who left voicemail
