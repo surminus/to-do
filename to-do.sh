@@ -34,6 +34,7 @@ function _help {
   view       View the list in read-only mode.
   browse     Opens up a web browser for the Github repository.
   show       Displays the contents of the current list to STDOUT.
+  git        Commit, push and pull from the repository.
 
 EOF
 }
