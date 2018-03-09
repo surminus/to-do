@@ -12,4 +12,4 @@ Last week at GDS!
 
 ### Flats
 
- - [] Ring back person who left voicemail
+ - [x] Ring back person who left voicemail
