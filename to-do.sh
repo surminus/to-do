@@ -84,7 +84,7 @@ function _git {
   cd $REPO_DIR
 
   case $COMMAND in
-    update) git add . && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
+    update) git add to-do.md archive/ && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
     push) git push origin HEAD ;;
     fetch) git pull ;;
     *) _git_help ;;
@@ -100,7 +100,7 @@ function _git_interactive_update {
     while [ $N -eq 0 ]; do
       N=1
       case $answer in
-        y|yes) _git add && _git push ;;
+        y|yes) _git update && _git push ;;
         n|no) ;;
         *) echo "(y)es/(n)o"; N=0 ;;
       esac
@@ -205,6 +205,8 @@ function _new {
     $EDITOR $CURRENT_LIST
 
   _git_interactive_update
+
+  exit 0
 }
 
 function _edit {
@@ -226,6 +228,8 @@ function _edit {
   fi
 
   _git_interactive_update
+
+  exit 0
 }
 
 function _new_check {
@@ -235,7 +239,7 @@ function _new_check {
     if [[ "$(_current_list_age)" -lt 7  ]]; then
       echo "Current list is only $(_current_list_age) days old!"
       echo "Do you want to archive and create new, or edit instead?"
-      echo "(e)dit/(n)ew/(q)uit"
+      echo "(n)ew/(e)dit/(q)uit"
 
       N=0
       while [ $N -eq 0 ]; do
