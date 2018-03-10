@@ -73,6 +73,56 @@ function _current_list_age {
 
 }
 
+function _git {
+  COMMAND=$1
+
+  if [[ ! $COMMAND ]]; then
+    _git_help
+    exit 1
+  fi
+
+  cd $REPO_DIR
+
+  case $COMMAND in
+    update) git add . && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
+    push) git push origin HEAD ;;
+    fetch) git pull ;;
+    *) _git_help ;;
+  esac
+}
+
+function _git_interactive_update {
+  cd $REPO_DIR
+  if ! git diff --quiet to-do.md archive/; then
+    echo "Do you want to push changes to Github? (y)es/(n)o"
+    read answer
+    N=0
+    while [ $N -eq 0 ]; do
+      N=1
+      case $answer in
+        y|yes) _git add && _git push ;;
+        n|no) ;;
+        *) echo "(y)es/(n)o"; N=0 ;;
+      esac
+    done
+  fi
+}
+
+function _git_remote_check {
+  test -d "${HOME}/.to-do" || mkdir "${HOME}/.to-do"
+  GIT_CHECK_FILE="${HOME}/.to-do/git-status"
+
+  test -f $GIT_CHECK_FILE || touch $GIT_CHECK_FILE
+
+  # If the file is older than one day then check for updates.
+  if test $(find ${GIT_CHECK_FILE} -mmin +1400); then
+    cd $REPO_DIR
+    echo "Checking for updates"
+    git remote update && git status -uno | grep -q 'Your branch is up to date' || git pull origin HEAD
+    touch $GIT_CHECK_FILE
+  fi
+}
+
 function _archive {
   ARCHIVE_DIR="${REPO_DIR}/archive"
 
@@ -135,6 +185,7 @@ function _archive {
 }
 
 function _view {
+  _git_remote_check
   test -f $CURRENT_LIST && view $CURRENT_LIST
 }
 
@@ -143,6 +194,7 @@ function _browse {
 }
 
 function _show {
+  _git_remote_check
   test -f $CURRENT_LIST && cat $CURRENT_LIST
 }
 
@@ -152,7 +204,7 @@ function _new {
   echo "## $(date +%Y-%m-%d)" > $CURRENT_LIST && \
     $EDITOR $CURRENT_LIST
 
-  exit 0
+  _git_interactive_update
 }
 
 function _edit {
@@ -172,9 +224,13 @@ function _edit {
       esac
     done
   fi
+
+  _git_interactive_update
 }
 
 function _new_check {
+  _git_remote_check
+
   if [[ -f $CURRENT_LIST ]]; then
     if [[ "$(_current_list_age)" -lt 7  ]]; then
       echo "Current list is only $(_current_list_age) days old!"
@@ -197,6 +253,8 @@ function _new_check {
 }
 
 function _edit_check {
+  _git_remote_check
+
   if [[ -f $CURRENT_LIST ]]; then
     if [[ $(_current_list_age) -ge 7 ]]; then
       echo "Current list is older than one week. Do you wish to edit"
@@ -217,24 +275,6 @@ function _edit_check {
       done
     fi
   fi
-}
-
-function _git {
-  COMMAND=$1
-
-  if [[ ! $COMMAND ]]; then
-    _git_help
-    exit 1
-  fi
-
-  cd $REPO_DIR
-
-  case $COMMAND in
-    update) git add . && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
-    push) git push origin HEAD ;;
-    fetch) git pull ;;
-    *) _git_help ;;
-  esac
 }
 
 case $1 in
