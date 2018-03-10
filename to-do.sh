@@ -129,7 +129,7 @@ function _archive {
   test -d $ARCHIVE_DIR || mkdir $ARCHIVE_DIR
 
   if [[ -f $CURRENT_LIST ]]; then
-    if [[ "$(_current_list_age)" -lt 7 ]]; then
+    if [[ "$(_current_list_age)" -lt 7 ]] && [[ $1 != "force" ]]; then
       echo "Current list only $(_current_list_age) days old!"
       echo "Do you still wish to archive?"
       echo "(y)es/(n)o"
@@ -199,7 +199,7 @@ function _show {
 }
 
 function _new {
-  _archive
+  _archive "force"
 
   echo "## $(date +%Y-%m-%d)" > $CURRENT_LIST && \
     $EDITOR $CURRENT_LIST
