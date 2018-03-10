@@ -234,8 +234,8 @@ function _new_check {
   if [[ -f $CURRENT_LIST ]]; then
     if [[ "$(_current_list_age)" -lt 7  ]]; then
       echo "Current list is only $(_current_list_age) days old!"
-      echo "Do you want to edit instead, or archive and create new?"
-      echo "(e)dit/(a)rchive/(q)uit"
+      echo "Do you want to archive and create new, or edit instead?"
+      echo "(e)dit/(n)ew/(q)uit"
 
       N=0
       while [ $N -eq 0 ]; do
