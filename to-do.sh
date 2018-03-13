@@ -26,6 +26,8 @@ function _help {
 
   Usage: to-do <command> [options]
 
+  If no command is provided then the default action is to edit.
+
   Commands:
 
   new        Create a new list. This also archives the previous "current" list.
