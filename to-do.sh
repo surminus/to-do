@@ -28,7 +28,7 @@ fi
 ### Global variable
 CURRENT_LIST="$REPO_DIR/to-do.md"
 GIT_REPO_URL="https://github.com/${GIT_USER}/${REPO_NAME}"
-GITHUB_PAGES_URL="https://${GIT_USER}.github.io/${REPO_NAME}"
+GITHUB_PAGES_URL="https://${GIT_USER}.github.io/${REPO_NAME}/to-do.html"
 
 ### Functions
 
