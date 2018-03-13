@@ -76,7 +76,7 @@ function _html_help {
 
   Commands:
 
-  render      Render the list to HTML at index.html.
+  render      Render the list to HTML at to-do.html.
   browse      View the list in Github pages for the repository.
 
 EOF
@@ -110,7 +110,7 @@ function _git {
   cd $REPO_DIR
 
   case $COMMAND in
-    update) git add to-do.md index.html archive/ && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
+    update) git add to-do.md to-do.html archive/ && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
     push) git push origin HEAD ;;
     fetch) git pull ;;
     *) _git_help ;;
@@ -152,6 +152,10 @@ function _git_remote_check {
 function _html {
   OPTION=$1
 
+  if [[ -z $OPTION ]]; then
+    _html_help && exit 1
+  fi
+
   case $OPTION in
     render)
       if ! which pandoc >/dev/null; then
@@ -161,7 +165,7 @@ function _html {
       fi
 
       cd $REPO_DIR && \
-        pandoc -f markdown -t html to-do.md > index.html
+        pandoc -f markdown -t html to-do.md > to-do.html
       ;;
     browse)
       open "${GITHUB_PAGES_URL}"
@@ -343,6 +347,7 @@ case $1 in
   view) _view ;;
   show) _show ;;
   git) _git $2 ;;
+  html) _html $2 ;;
   help) _help ;;
   *) _edit_check && _edit ;;
 esac
