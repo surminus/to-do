@@ -119,7 +119,7 @@ function _git {
 
 function _git_interactive_update {
   cd $REPO_DIR
-  if ! git diff --quiet to-do.md archive/; then
+  if ! git diff --quiet to-do.md to-do.html archive/; then
     echo "Do you want to push changes to Github? (y)es/(n)o"
     read answer
     N=0
