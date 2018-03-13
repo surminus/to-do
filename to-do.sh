@@ -34,7 +34,7 @@ function _help {
   edit       Edit the current list.
   archive    Archive the current list.
   view       View the list in read-only mode.
-  browse     Opens up a web browser for the Github repository.
+  browse     Opens up a web browser for the current list in Github.
   show       Displays the contents of the current list to STDOUT.
   git        Commit, push and pull from the repository.
 
@@ -192,7 +192,7 @@ function _view {
 }
 
 function _browse {
-  open "https://github.com/$GIT_REPO"
+  open "https://github.com/$GIT_REPO/blob/master/to-do.md"
 }
 
 function _show {
