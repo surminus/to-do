@@ -4,8 +4,14 @@
 #
 ### Set variables
 
-# Set current to-do list
+# Where the repository is installed
 REPO_DIR="${HOME}/surminus/to-do"
+# Name of Github user used by this list
+GIT_USER="surminus"
+# Name of the repository for this list
+REPO_NAME="to-do"
+# Whether to render to HTML by default
+ALWAYS_HTML_RENDER="true"
 
 ###
 if [[ $EDITOR == "" ]]; then
@@ -14,7 +20,8 @@ fi
 
 ### Global variable
 CURRENT_LIST="$REPO_DIR/to-do.md"
-GIT_REPO="surminus/to-do"
+GIT_REPO_URL="https://github.com/${GIT_USER}/${REPO_NAME}"
+GITHUB_PAGES_URL="https://${GIT_USER}.github.io/${REPO_NAME}"
 
 ### Functions
 
@@ -37,6 +44,7 @@ function _help {
   browse     Opens up a web browser for the current list in Github.
   show       Displays the contents of the current list to STDOUT.
   git        Commit, push and pull from the repository.
+  html       Render list to HTML using pandoc, and browse in Github pages.
 
 EOF
 }
@@ -54,6 +62,22 @@ function _git_help {
   update      Add latest changes and commit the result.
   fetch       Pull the latest list.
   push        Push the latest changes to the current branch.
+
+EOF
+}
+
+function _html_help {
+  cat << EOF
+  #############
+      to-do
+  #############
+
+  Usage: to-do html [option]
+
+  Commands:
+
+  render      Render the list to HTML at index.html.
+  browse      View the list in Github pages for the repository.
 
 EOF
 }
@@ -86,7 +110,7 @@ function _git {
   cd $REPO_DIR
 
   case $COMMAND in
-    update) git add to-do.md archive/ && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
+    update) git add to-do.md index.html archive/ && git commit -m "Updated on $(date +%F_%H:%M:%S)" ;;
     push) git push origin HEAD ;;
     fetch) git pull ;;
     *) _git_help ;;
@@ -123,6 +147,27 @@ function _git_remote_check {
     git remote update && git status -uno | grep -q 'Your branch is up to date' || git pull origin HEAD
     touch $GIT_CHECK_FILE
   fi
+}
+
+function _html {
+  OPTION=$1
+
+  case $OPTION in
+    render)
+      if ! which pandoc >/dev/null; then
+        echo "Must install pandoc:"
+        echo "brew install pandoc"
+        exit 1
+      fi
+
+      cd $REPO_DIR && \
+        pandoc -f markdown -t html to-do.md > index.html
+      ;;
+    browse)
+      open "${GITHUB_PAGES_URL}"
+      ;;
+    *) _html_help && exit 1 ;;
+  esac
 }
 
 function _archive {
@@ -192,12 +237,23 @@ function _view {
 }
 
 function _browse {
-  open "https://github.com/$GIT_REPO/blob/master/to-do.md"
+  open "${GIT_REPO}/blob/master/to-do.md"
 }
 
 function _show {
   _git_remote_check
   test -f $CURRENT_LIST && cat $CURRENT_LIST
+}
+
+# Default functions that happen after new or edit
+function _post {
+  if [[ $ALWAYS_HTML_RENDER == "true" ]]; then
+    _html render
+  fi
+
+  _git_interactive_update
+
+  exit 0
 }
 
 function _new {
@@ -206,9 +262,7 @@ function _new {
   echo "## $(date +%Y-%m-%d)" > $CURRENT_LIST && \
     $EDITOR $CURRENT_LIST
 
-  _git_interactive_update
-
-  exit 0
+  _post
 }
 
 function _edit {
@@ -229,9 +283,7 @@ function _edit {
     done
   fi
 
-  _git_interactive_update
-
-  exit 0
+  _post
 }
 
 function _new_check {

@@ -22,12 +22,17 @@ _todo ()
     view\
     browse\
     show\
-    git"
+    git\
+    html"
 
   GIT_COMMANDS="\
     update\
     fetch\
     push"
+
+  HTML_COMMANDS="\
+  render\
+  browse"
 
   case $firstword in
     git)
@@ -37,6 +42,18 @@ _todo ()
             complete_words=""
           else
             complete_words="$GIT_COMMANDS"
+          fi
+          ;;
+      esac
+      ;;
+
+    html)
+      case "${lastword}" in
+        *)
+          if [[ "${lastword}" =~ ^render\|browse$ ]]; then
+            complete_words=""
+          else
+            complete_words="$HTML_COMMANDS"
           fi
           ;;
       esac
