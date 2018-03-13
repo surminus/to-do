@@ -6,12 +6,19 @@
 
 # Where the repository is installed
 REPO_DIR="${HOME}/surminus/to-do"
+
 # Name of Github user used by this list
 GIT_USER="surminus"
+
 # Name of the repository for this list
 REPO_NAME="to-do"
+
 # Whether to render to HTML by default
 ALWAYS_HTML_RENDER="true"
+
+# How many minutes between checking for remote changes
+# Default: 1 day
+REMOTE_GITHUB_CHECK_MINUTES=1400
 
 ###
 if [[ $EDITOR == "" ]]; then
@@ -141,7 +148,7 @@ function _git_remote_check {
   test -f $GIT_CHECK_FILE || touch $GIT_CHECK_FILE
 
   # If the file is older than one day then check for updates.
-  if test $(find ${GIT_CHECK_FILE} -mmin +1400); then
+  if test $(find ${GIT_CHECK_FILE} -mmin +${REMOTE_GITHUB_CHECK_MINUTES}); then
     cd $REPO_DIR
     echo "Checking for updates"
     git remote update && git status -uno | grep -q 'Your branch is up to date' || git pull origin HEAD
