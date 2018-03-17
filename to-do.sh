@@ -248,7 +248,7 @@ function _view {
 }
 
 function _browse {
-  open "${GIT_REPO}/blob/master/to-do.md"
+  open "${GIT_REPO_URL}"
 }
 
 function _show {
