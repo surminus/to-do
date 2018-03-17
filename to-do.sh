@@ -279,7 +279,6 @@ function _new {
 function _edit {
   if [[ -f $CURRENT_LIST ]]; then
     $EDITOR $CURRENT_LIST || exit 1
-    exit 0
   else
     echo "No current list. Shall I create one?"
     echo "(y)es/(n)o"
