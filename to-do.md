@@ -1,11 +1,12 @@
-## 2018-03-13
+## 2018-03-24
 
-### Week between jobs
+### Personal
 
- - [x] Add function so to-do automatically renders HTML
- - [ ] Finish "Learning Chef" book
- - [ ] Start "Customizing Chef" or "Infrastructure as Code with Chef"
- - [ ] Return shirt to H&M
- - [x] ASOS returns (if applicable)
+ - [] Passport & payslips to estate agent
+ - [] Start looking at taking clothes and items to charity shop
+ - [] Find a good place to thread brows near work
 
+### Work
 
+ - [] Get one pipeline working in Concourse for demo
+ - [] Begin document detailing CI/CD work
