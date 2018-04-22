@@ -335,8 +335,8 @@ function _edit_check {
         read answer
 
         case $answer in
-          n|new) new ;;
-          e|edit) edit ;;
+          n|new) _new ;;
+          e|edit) _edit ;;
           q|quit) exit 0 ;;
           *) echo "(n)ew/(e)dit/(q)uit"; N=0;;
         esac
