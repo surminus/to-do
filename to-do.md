@@ -1,6 +1,5 @@
-## 2018-04-22
+## 2018-06-02
 
- - Start packing!
- - ~~Pay deposit money~~
- - Take some stuff to charity shops
- - Buy theatre tokens for Mum & Dad
+ - New lightbulb
+ - Shorts that fit
+ - Storage
